@@ -1,4 +1,5 @@
 import * as yup from "yup";
+
 export const registerSchema = yup
   .object({
     username: yup
@@ -27,3 +28,4 @@ export const loginSchema = yup
       .min(6, "Password should be at least 6 charachters."),
   })
   .required();
+
