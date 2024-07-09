@@ -14,13 +14,19 @@ const TodoList = () => {
     title: "",
     description: "",
   };
+
   const storageKey = "loggedInUser";
   const userDataString = localStorage.getItem(storageKey);
   const userData = userDataString ? JSON.parse(userDataString) : null;
   const [isEditModelOpen, setIsEditModelOpen] = useState(false);
   const [istodoEditLoading, setIstodoEditLoading] = useState(false);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodo);
+  const [todoToAdd, setTodoToAdd] = useState({
+    title: "",
+    description: "",
+  });
 
   const { isLoading, data } = useAuthenticatedQuery({
     queryKey: ["todoList", `${todoToEdit.id}`],
@@ -41,6 +47,7 @@ const TodoList = () => {
     setTodoToEdit(defaultTodo);
     setIsEditModelOpen(false);
   };
+
   const openConfirmModal = (todo: ITodo) => {
     setTodoToEdit(todo);
     setIsOpenConfirmModal(true);
@@ -48,6 +55,49 @@ const TodoList = () => {
   const closeConfirmModal = () => {
     setTodoToEdit(defaultTodo);
     setIsOpenConfirmModal(false);
+  };
+
+  const openAddModal = () => setIsOpenAddModal(true);
+
+  // const closeAddModal = (event: React.FormEvent<HTMLFormElement>) => {
+  const closeAddModal = () => {
+    // event.preventDefault()
+    setTodoToAdd({
+      title: "",
+      description: "",
+    });
+    setIsOpenAddModal(false);
+  };
+
+  const changeAddHandler = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setTodoToAdd({
+      ...todoToAdd,
+      [name]: value,
+    });
+  };
+  const submitAddHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIstodoEditLoading(true);
+    try {
+      const { title, description } = todoToAdd;
+      const { status } = await axiosInstance.post(
+        `/todos`,
+        { data: { title, description } },
+        {
+          headers: {
+            Authorization: `Bearer ${userData.jwt}`,
+          },
+        }
+      );
+      if (status === 200) {
+        closeAddModal();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIstodoEditLoading(false);
+    }
   };
 
   const changeHandler = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -104,18 +154,23 @@ const TodoList = () => {
   if (isLoading)
     return (
       <div className="space-y-1 ">
-        {Array.from({length: 3},(_,idx)=>(
-          <TodoSkeleton key={idx}/>
+        {Array.from({ length: 3 }, (_, idx) => (
+          <TodoSkeleton key={idx} />
         ))}
       </div>
     );
 
   return (
-    <div className="space-y-1 ">
+    <div className="space-y-1">
+      <div className="flex justify-center pb-4">
+        <Button size={"sm"} onClick={openAddModal}>
+          Add New Todo
+        </Button>
+      </div>
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => (
           <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
-            <p className="w-full font-semibold">1- {todo.title} </p>
+            <p className="w-full font-semibold">{todo.id} - {todo.title} </p>
             <div className="flex items-center justify-end w-full space-x-3">
               <Button size={"sm"} onClick={() => onOpenEditModel(todo)}>
                 Edit
@@ -129,6 +184,21 @@ const TodoList = () => {
       ) : (
         <h3>No todos yet</h3>
       )}
+
+      <Modal title="Add New Todo" isOpen={isOpenAddModal} closeModal={closeAddModal}>
+        <form onSubmit={submitAddHandler} className="space-y-3">
+          <Input name="title" value={todoToAdd.title} onChange={changeAddHandler} />
+          <Textarea name="description" value={todoToAdd.description} onChange={changeAddHandler} />
+          <div className="flex items-center space-x-3 mt-4">
+            <Button size={"sm"} isLoading={istodoEditLoading}>
+              Done
+            </Button>
+            <Button size={"sm"} variant={"cancel"} onClick={closeAddModal}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       <Modal title="Edit Todo" isOpen={isEditModelOpen} closeModal={onCloseEditModel}>
         <form onSubmit={submitHandler} className="space-y-3">
