@@ -22,6 +22,7 @@ const TodoList = () => {
   const [istodoEditLoading, setIstodoEditLoading] = useState(false);
   const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
+  const [queryVersion, setQueryVersion] = useState(1);
   const [todoToEdit, setTodoToEdit] = useState<ITodo>(defaultTodo);
   const [todoToAdd, setTodoToAdd] = useState({
     title: "",
@@ -29,7 +30,7 @@ const TodoList = () => {
   });
 
   const { isLoading, data } = useAuthenticatedQuery({
-    queryKey: ["todoList", `${todoToEdit.id}`],
+    queryKey: ["todoList", `${queryVersion}`],
     url: "/users/me?populate=todos",
     config: {
       headers: {
@@ -91,6 +92,7 @@ const TodoList = () => {
         }
       );
       if (status === 200) {
+        setQueryVersion((prev) => prev + 1);
         closeAddModal();
       }
     } catch (error) {
@@ -122,6 +124,7 @@ const TodoList = () => {
         }
       );
       if (status === 200) {
+        setQueryVersion((prev) => prev + 1);
         onCloseEditModel();
       }
     } catch (error) {
@@ -142,6 +145,7 @@ const TodoList = () => {
         },
       });
       if (status === 200) {
+        setQueryVersion((prev) => prev + 1);
         closeConfirmModal();
       }
     } catch (error) {
@@ -170,7 +174,9 @@ const TodoList = () => {
       {data.todos.length ? (
         data.todos.map((todo: ITodo) => (
           <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
-            <p className="w-full font-semibold">{todo.id} - {todo.title} </p>
+            <p className="w-full font-semibold">
+              {todo.id} - {todo.title}{" "}
+            </p>
             <div className="flex items-center justify-end w-full space-x-3">
               <Button size={"sm"} onClick={() => onOpenEditModel(todo)}>
                 Edit
@@ -193,7 +199,7 @@ const TodoList = () => {
             <Button size={"sm"} isLoading={istodoEditLoading}>
               Done
             </Button>
-            <Button size={"sm"} variant={"cancel"} onClick={closeAddModal}>
+            <Button size={"sm"} type="button" variant={"cancel"} onClick={closeAddModal}>
               Cancel
             </Button>
           </div>
@@ -208,7 +214,7 @@ const TodoList = () => {
             <Button size={"sm"} isLoading={istodoEditLoading}>
               Update
             </Button>
-            <Button size={"sm"} variant={"cancel"} onClick={onCloseEditModel}>
+            <Button size={"sm"} type="button" variant={"cancel"} onClick={onCloseEditModel}>
               Cancel
             </Button>
           </div>
@@ -222,10 +228,10 @@ const TodoList = () => {
         description="Deleting this todo will remove it permanentaly from your todos list. Please make sure this is the intended action "
       >
         <div className="flex items-center space-x-3 mt-3">
-          <Button variant={"danger"} onClick={handleRemove} isLoading={istodoEditLoading}>
+          <Button size={"sm"} variant={"danger"} onClick={handleRemove} isLoading={istodoEditLoading}>
             Yes, remove
           </Button>
-          <Button variant={"cancel"} onClick={closeConfirmModal}>
+          <Button size={"sm"} type="button" variant={"cancel"} onClick={closeConfirmModal}>
             Cancel
           </Button>
         </div>
