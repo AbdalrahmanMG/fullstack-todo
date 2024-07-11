@@ -38,7 +38,6 @@ const TodoList = () => {
         Authorization: `Bearer ${userData.jwt}`,
       },
     },
-    
   });
 
   //* handlers
@@ -104,8 +103,6 @@ const TodoList = () => {
     }
   };
   const onGenerateTodos = async () => {
-
-
     for (let index = 0; index < 100; index++) {
       try {
         const { data } = await axiosInstance.post(
@@ -180,6 +177,9 @@ const TodoList = () => {
   if (isLoading)
     return (
       <div className="space-y-1 ">
+        <div className="flex justify-center pb-4">
+          <div className="h-9 w-32 bg-gray-300 rounded-md dark:bg-gray-700"></div>
+        </div>
         {Array.from({ length: 3 }, (_, idx) => (
           <TodoSkeleton key={idx} />
         ))}

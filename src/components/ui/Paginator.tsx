@@ -7,25 +7,13 @@ interface IProps {
   onClickNext: () => void;
 }
 
-const Paginator = ({
-  page,
-  pageCount,
-  onClickPrev,
-  isLoading,
-  total,
-  onClickNext,
-}: IProps) => {
+const Paginator = ({ page, pageCount, onClickPrev, isLoading, total, onClickNext }: IProps) => {
   return (
     <div className="flex justify-center items-center">
       <p className="text-sm text-gray-600 mx-3">
-        Page{" "}
-        <span className="mx-1 font-semibold text-gray-900 text-md-1">
-          {page}
-        </span>{" "}
-        to
+        Page <span className="mx-1 font-semibold text-gray-900 text-md-1">{page}</span> to
         <span className="mx-1 font-smeibold text-gray-900">{pageCount}</span> of
-        <span className="mx-1 font-semibold text-gray-900">{total}</span>{" "}
-        Records
+        <span className="mx-1 font-semibold text-gray-900">{total}</span> Records
       </p>
 
       <button
@@ -34,20 +22,8 @@ const Paginator = ({
         disabled={page === 1 || isLoading}
         onClick={onClickPrev}
       >
-        <svg
-          className="w-3.5 h-3.5 me-2 rtl:rotate-180"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 14 10"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 5H1m0 0 4 4M1 5l4-4"
-          />
+        <svg className="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5H1m0 0 4 4M1 5l4-4" />
         </svg>
         Previous
       </button>
@@ -58,20 +34,8 @@ const Paginator = ({
         onClick={onClickNext}
       >
         Next
-        <svg
-          className="w-3.5 h-3.5 ms-2 rtl:rotate-180"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 14 10"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M1 5h12m0 0L9 1m4 4L9 9"
-          />
+        <svg className="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
         </svg>
       </button>
     </div>
