@@ -13,6 +13,8 @@ const useAuthenticatedQuery = ({ queryKey, url, config }: IAuthenticatedQuery) =
     queryKey,
     queryFn: async () => {
       const { data } = await axiosInstance.get(url, config);
+      console.log('todos', data);
+      
       return data;
     },
   });

@@ -7,6 +7,7 @@ import { ITodo } from "../interfaces";
 import Textarea from "./ui/Textarea";
 import axiosInstance from "../config/axios.config";
 import TodoSkeleton from "./TodoSkeleton";
+import { faker } from "@faker-js/faker";
 
 const TodoList = () => {
   const defaultTodo = {
@@ -31,12 +32,13 @@ const TodoList = () => {
 
   const { isLoading, data } = useAuthenticatedQuery({
     queryKey: ["todoList", `${queryVersion}`],
-    url: "/users/me?populate=todos",
+    url: "/users/me?populate=todo",
     config: {
       headers: {
         Authorization: `Bearer ${userData.jwt}`,
       },
     },
+    
   });
 
   //* handlers
@@ -84,7 +86,7 @@ const TodoList = () => {
       const { title, description } = todoToAdd;
       const { status } = await axiosInstance.post(
         `/todos`,
-        { data: { title, description } },
+        { data: { title, description, user: [userData.user.id] } },
         {
           headers: {
             Authorization: `Bearer ${userData.jwt}`,
@@ -99,6 +101,26 @@ const TodoList = () => {
       console.log(error);
     } finally {
       setIstodoEditLoading(false);
+    }
+  };
+  const onGenerateTodos = async () => {
+
+
+    for (let index = 0; index < 100; index++) {
+      try {
+        const { data } = await axiosInstance.post(
+          `/todos`,
+          { data: { title: faker.word.words(5), description: faker.lorem.paragraph(2), users: [userData.user.id] } },
+          {
+            headers: {
+              Authorization: `Bearer ${userData.jwt}`,
+            },
+          }
+        );
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -170,9 +192,12 @@ const TodoList = () => {
         <Button size={"sm"} onClick={openAddModal}>
           Add New Todo
         </Button>
+        <Button size={"sm"} onClick={onGenerateTodos}>
+          Generate Todos
+        </Button>
       </div>
-      {data.todos.length ? (
-        data.todos.map((todo: ITodo) => (
+      {data.todo.length ? (
+        data.todo.map((todo: ITodo) => (
           <div key={todo.id} className="flex items-center justify-between hover:bg-gray-100 duration-300 p-3 rounded-md even:bg-gray-100">
             <p className="w-full font-semibold">
               {todo.id} - {todo.title}{" "}
